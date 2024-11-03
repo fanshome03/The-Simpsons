@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>   مسلسل  The Simpsons </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #000010;
+            color: white;
+            overflow: auto;
+        }
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000010;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loader {
+            border: 10px solid #fff;
+            border-top: 10px solid #e6b800;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .content {
+    display: block; /* تأكد من عرض المحتوى بشكل صحيح */
+    height: auto; /* السماح للتمرير للأسفل */
+    overflow: auto; /* السماح بالتمرير في القسم */
+}
+
+.video-player {
+    width: 100vw;
+    height: 56vw;
+    position: relative; /* لجعل المشغل غير مثبت */
+    margin-left: auto;
+    margin-right: auto;
+    background-color: black;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+}
+        .pin-indicator {
+            position: absolute;
+            top: -3px;
+            right: -5px;
+            width: 150px;
+            height: 150px;
+        }
+        .video-info {
+            padding: 10px;
+            margin-top: 5px; /* مسافة طبيعية بين قسم العنوان وقسم القناة */
+        }
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #e6e6e6;
+            transition: color 0.3s ease;
+        }
+        .video-title:hover {
+            color: #e6b800;
+        }
+        .video-description {
+            display: none;
+            font-size: 14px;
+            color: #ddd;
+            margin: 5px 0;
+        }
+        .video-year {
+            font-size: 12px;
+            color: #909090;
+            margin-top: 5px;
+        }
+        .channel-info {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-top: -13px; /* تقليل المسافة إلى -5 */
+            
+        }
+        .channel-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .channel-info .channel-name {
+            font-size: 16px;
+            color: #e6e6e6;
+            font-weight: bold;
+        }
+        .suggested-videos {
+            margin-top: 10px; /* مسافة طبيعية بين العنوان وقسم المقترحات */
+            padding-left: 10px;
+            max-height: 400px;
+            overflow-y: auto; /* السماح بالتمرير */
+            display: flex;
+            flex-direction: column;
+        }
+        .suggested-video {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+        .suggested-video:hover {
+            background-color: #000010;
+            border-radius: 8px;
+        }
+        .suggested-video img {
+            width: 120px;
+            height: 67px;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        .suggested-video .details .title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e6e6e6;
+        }
+        .suggested-video .details .channel {
+            font-size: 12px;
+            color: #909090;
+        }
+        .suggested-video .details .year {
+            font-size: 12px;
+            color: #909090;
+        }
+        /* نافذة الاختيار */
+        .quality-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .quality-popup h3 {
+            margin: 0 0 10px;
+        }
+        .quality-option {
+            margin: 5px 0;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .quality-option:hover {
+            background-color: #e6b800;
+        }
+        /* خيارات التحكم */
+        .controls-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .controls-popup h3 {
+            margin: 0 0 10px;
+        }
+        .control-option {
+            margin: 5px 0;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .control-option:hover {
+            background-color: #e6b800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="loader-wrapper" id="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+<div class="content">
+    <div class="video-player" id="main-video">
+        <video id="video" controls>
+            <source src="https://firebasestorage.googleapis.com/v0/b/mare-c9dc2.appspot.com/o/%D8%AA%D8%B1%D9%88%D9%8A%D8%AC%2Flv_0_%D9%A2%D9%A0%D9%A2%D9%A4%D9%A0%D9%A4%D9%A2%D9%A7%D9%A2%D9%A2%D9%A1%D9%A9%D9%A4%D9%A3.mp4?alt=media&token=70dcb001-0ebe-4812-99d2-ec21898048d2" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+   
+    </div>
+
+    <div class="video-info">
+        <div class="video-title" onclick="toggleDescription()"> The Simpsons      </div>
+        <div class="video-year" id="fixed-year">1989, قد يحتوي المسلسل على افكار تحد للعنف والعدوانية </div>
+        <div class="video-description">
+    	
+    	تدور أحداث المسلسل في قالب كوميدي حول المغامرات الساخرة والغريبة لعائلة سبمسون وكافة سكان مدينة سبرينجفيلد
+    	 
+    		  </div>
+    </div>
+
+    <div class="channel-info">
+        <img src="https://www.babup.com/do.php?img=93513" alt="Channel Logo">
+        <div class="channel-name">Fans Home</div>
+    </div>
+
+    <hr style="border: 1px solid #fff; margin: 10px 0;">
+
+    <div class="suggested-videos">
+        <h3>| Start watching</h3>
+      
+        <div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20001%20720p.mp4', 'الموسم الاول الحلقة 1 ')">
+            <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+            <div class="details">
+                <div class="title"> The Simpsons    </div>
+                <div class="channel">مترجم  بالعربي</div>
+                <div class="year">| s1e1</div>
+            </div>
+        </div>
+       
+       
+   <div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20002%20720p.mp4', 'الموسم الاول الحلقة 2')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e2</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20003%20720p.mp4', 'الموسم الاول الحلقة 3')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e3</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20004%20720p.mp4', 'الموسم الاول الحلقة 4')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e4</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20005%20720p.mp4', 'الموسم الاول الحلقة 5')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e5</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20006%20720p.mp4', 'الموسم الاول الحلقة 6')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e6</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20007%20720p.mp4', 'الموسم الاول الحلقة 7')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e7</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20008%20720p.mp4', 'الموسم الاول الحلقة 8')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e8</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20009%20720p.mp4', 'الموسم الاول الحلقة 9')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e9</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20010%20720p.mp4', 'الموسم الاول الحلقة 10')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e10</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20011%20720p.mp4', 'الموسم الاول الحلقة 11')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e11</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20012%20720p.mp4', 'الموسم الاول الحلقة 12')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e12</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/01/The%20Simpsons%20S01%20013%20720p.mp4', 'الموسم الاول الحلقة 13 والأخيرة للموسم الأول')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s1e13</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20001%20720p.mp4', 'الموسم الثاني الحلقة 1')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e1</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20002%20720p.mp4', 'الموسم الثاني الحلقة 2')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e2</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20003%20720p.mp4', 'الموسم الثاني الحلقة 3')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e3</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20004%20720p.mp4', 'الموسم الثاني الحلقة 4')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e4</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20005%20720p.mp4', 'الموسم الثاني الحلقة 5')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e5</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20006%20720p.mp4', 'الموسم الثاني الحلقة 6')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e6</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20007%20720p.mp4', 'الموسم الثاني الحلقة 7')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e7</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20008%20720p.mp4', 'الموسم الثاني الحلقة 8')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e8</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20009%20720p.mp4', 'الموسم الثاني الحلقة 9')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e9</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20010%20720p.mp4', 'الموسم الثاني الحلقة 10')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e10</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20011%20720p.mp4', 'الموسم الثاني الحلقة 11')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e11</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20012%20720p.mp4', 'الموسم الثاني الحلقة 12')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e12</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20013%20720p.mp4', 'الموسم الثاني الحلقة 13')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e13</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20014%20720p.mp4', 'الموسم الثاني الحلقة 14')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e14</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20015%20720p.mp4', 'الموسم الثاني الحلقة 15')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e15</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20016%20720p.mp4', 'الموسم الثاني الحلقة 16')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e16</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20017%20720p.mp4', 'الموسم الثاني الحلقة 17')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e17</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20018%20720p.mp4', 'الموسم الثاني الحلقة 18')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e18</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20019%20720p.mp4', 'الموسم الثاني الحلقة 19')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e19</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20020%20720p.mp4', 'الموسم الثاني الحلقة 20')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e20</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20021%20720p.mp4', 'الموسم الثاني الحلقة 21')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e21</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/02/The%20Simpsons%20S02%20022%20720p.mp4', 'الموسم الثاني الحلقة 22 والأخيرة للموسم الثاني')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s2e22</div>
+    </div>
+</div>
+
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20001%20720p.mp4', 'الموسم الثالث الحلقة 1')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e1</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20002%20720p.mp4', 'الموسم الثالث الحلقة 2')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e2</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20003%20720p.mp4', 'الموسم الثالث الحلقة 3')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e3</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20004%20720p.mp4', 'الموسم الثالث الحلقة 4')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e4</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20005%20720p.mp4', 'الموسم الثالث الحلقة 5')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e5</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20006%20720p.mp4', 'الموسم الثالث الحلقة 6')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e6</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20007%20720p.mp4', 'الموسم الثالث الحلقة 7')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e7</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20008%20720p.mp4', 'الموسم الثالث الحلقة 8')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e8</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20009%20720p.mp4', 'الموسم الثالث الحلقة 9')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e9</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20010%20720p.mp4', 'الموسم الثالث الحلقة 10')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e10</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20011%20720p.mp4', 'الموسم الثالث الحلقة 11')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e11</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20012%20720p.mp4', 'الموسم الثالث الحلقة 12')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e12</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20013%20720p.mp4', 'الموسم الثالث الحلقة 13')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e13</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20014%20720p.mp4', 'الموسم الثالث الحلقة 14')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e14</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20015%20720p.mp4', 'الموسم الثالث الحلقة 15')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e15</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20016%20720p.mp4', 'الموسم الثالث الحلقة 16')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e16</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20017%20720p.mp4', 'الموسم الثالث الحلقة 17')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e17</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20018%20720p.mp4', 'الموسم الثالث الحلقة 18')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e18</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20019%20720p.mp4', 'الموسم الثالث الحلقة 19')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e19</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%02020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%02020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%02020%20720p.mp4', 'الموسم الثالث الحلقة 20')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e20</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20021%20720p.mp4', 'الموسم الثالث الحلقة 21')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e21</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20022%20720p.mp4', 'الموسم الثالث الحلقة 22')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e22</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20023%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20023%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/03/The%20Simpsons%20S03%20023%20720p.mp4', 'الموسم الثالث الحلقة 23 والأخيرة للموسم الثالث')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s3e23</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20001%20720p.mp4', 'الموسم الرابع الحلقة 1')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e1</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20002%20720p.mp4', 'الموسم الرابع الحلقة 2')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e2</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20003%20720p.mp4', 'الموسم الرابع الحلقة 3')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e3</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20004%20720p.mp4', 'الموسم الرابع الحلقة 4')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e4</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20005%20720p.mp4', 'الموسم الرابع الحلقة 5')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e5</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20006%20720p.mp4', 'الموسم الرابع الحلقة 6')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e6</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20007%20720p.mp4', 'الموسم الرابع الحلقة 7')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e7</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20008%20720p.mp4', 'الموسم الرابع الحلقة 8')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e8</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20009%20720p.mp4', 'الموسم الرابع الحلقة 9')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e9</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20010%20720p.mp4', 'الموسم الرابع الحلقة 10')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e10</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20011%20720p.mp4', 'الموسم الرابع الحلقة 11')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e11</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20012%20720p.mp4', 'الموسم الرابع الحلقة 12')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e12</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20013%20720p.mp4', 'الموسم الرابع الحلقة 13')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e13</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20014%20720p.mp4', 'الموسم الرابع الحلقة 14')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e14</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20015%20720p.mp4', 'الموسم الرابع الحلقة 15')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e15</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20016%20720p.mp4', 'الموسم الرابع الحلقة 16')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e16</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20017%20720p.mp4', 'الموسم الرابع الحلقة 17')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e17</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20018%20720p.mp4', 'الموسم الرابع الحلقة 18')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e18</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20019%20720p.mp4', 'الموسم الرابع الحلقة 19')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e19</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20020%20720p.mp4', 'الموسم الرابع الحلقة 20')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e20</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20021%20720p.mp4', 'الموسم الرابع الحلقة 21')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e21</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/04/The%20Simpsons%20S04%20022%20720p.mp4', 'الموسم الرابع الحلقة 22 والأخيرة للموسم الرابع')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s4e22</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20001%20720p.mp4', 'الموسم الخامس الحلقة 1')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e1</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20002%20720p.mp4', 'الموسم الخامس الحلقة 2')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e2</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20003%20720p.mp4', 'الموسم الخامس الحلقة 3')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e3</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20004%20720p.mp4', 'الموسم الخامس الحلقة 4')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e4</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20005%20720p.mp4', 'الموسم الخامس الحلقة 5')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e5</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20006%20720p.mp4', 'الموسم الخامس الحلقة 6')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e6</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20007%20720p.mp4', 'الموسم الخامس الحلقة 7')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e7</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20008%20720p.mp4', 'الموسم الخامس الحلقة 8')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e8</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20009%20720p.mp4', 'الموسم الخامس الحلقة 9')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e9</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20010%20720p.mp4', 'الموسم الخامس الحلقة 10')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e10</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20011%20720p.mp4', 'الموسم الخامس الحلقة 11')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e11</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20012%20720p.mp4', 'الموسم الخامس الحلقة 12')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e12</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20013%20720p.mp4', 'الموسم الخامس الحلقة 13')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e13</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20014%20720p.mp4', 'الموسم الخامس الحلقة 14')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e14</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20015%20720p.mp4', 'الموسم الخامس الحلقة 15')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e15</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20016%20720p.mp4', 'الموسم الخامس الحلقة 16')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e16</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20017%20720p.mp4', 'الموسم الخامس الحلقة 17')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e17</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20018%20720p.mp4', 'الموسم الخامس الحلقة 18')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e18</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20019%20720p.mp4', 'الموسم الخامس الحلقة 19')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e19</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20020%20720p.mp4', 'الموسم الخامس الحلقة 20')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e20</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20021%20720p.mp4', 'الموسم الخامس الحلقة 21')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e21</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/05/The%20Simpsons%20S05%20022%20720p.mp4', 'الموسم الخامس الحلقة 22 والأخيرة للموسم الخامس')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s5e22</div>
+    </div>
+</div>
+
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20001%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20001%20720p.mp4', 'الموسم السادس الحلقة 1')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e1</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20002%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20002%20720p.mp4', 'الموسم السادس الحلقة 2')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e2</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20003%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20003%20720p.mp4', 'الموسم السادس الحلقة 3')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e3</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20004%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20004%20720p.mp4', 'الموسم السادس الحلقة 4')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e4</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20005%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20005%20720p.mp4', 'الموسم السادس الحلقة 5')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e5</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20006%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20006%20720p.mp4', 'الموسم السادس الحلقة 6')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e6</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20007%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20007%20720p.mp4', 'الموسم السادس الحلقة 7')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e7</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20008%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20008%20720p.mp4', 'الموسم السادس الحلقة 8')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e8</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20009%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20009%20720p.mp4', 'الموسم السادس الحلقة 9')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e9</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20010%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20010%20720p.mp4', 'الموسم السادس الحلقة 10')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e10</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20011%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20011%20720p.mp4', 'الموسم السادس الحلقة 11')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e11</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20012%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20012%20720p.mp4', 'الموسم السادس الحلقة 12')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e12</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20013%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20013%20720p.mp4', 'الموسم السادس الحلقة 13')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e13</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20014%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20014%20720p.mp4', 'الموسم السادس الحلقة 14')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e14</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20015%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20015%20720p.mp4', 'الموسم السادس الحلقة 15')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e15</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20016%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20016%20720p.mp4', 'الموسم السادس الحلقة 16')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e16</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20017%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20017%20720p.mp4', 'الموسم السادس الحلقة 17')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e17</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20018%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20018%20720p.mp4', 'الموسم السادس الحلقة 18')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e18</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20019%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20019%20720p.mp4', 'الموسم السادس الحلقة 19')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e19</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20020%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20020%20720p.mp4', 'الموسم السادس الحلقة 20')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e20</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20021%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20021%20720p.mp4', 'الموسم السادس الحلقة 21')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e21</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20022%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20022%20720p.mp4', 'الموسم السادس الحلقة 22')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e22</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20023%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20023%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20023%20720p.mp4', 'الموسم السادس الحلقة 23')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e23</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20024%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20024%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20024%20720p.mp4', 'الموسم السادس الحلقة 24')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e24</div>
+    </div>
+</div>
+
+<div class="suggested-video" onclick="showQualityOptions('https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20025%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20025%20720p.mp4', 'https://cdn.animewitcher.com/Series/The%20Simpsons/06/The%20Simpsons%20S06%20025%20720p.mp4', 'الموسم السادس الحلقة 25 والأخيرة للموسم السادس')">
+    <img src="https://s01.babup.com/uploads/simpsons-header-h-2018.jpg" alt="Thumbnail">
+    <div class="details">
+        <div class="title">The Simpsons</div>
+        <div class="channel">مترجم بالعربي</div>
+        <div class="year">| s6e25</div>
+    </div>
+</div>
+
+
+
+    </div>
+</div>
+
+<!-- نافذة اختيار الجودة -->
+<div class="quality-popup" id="quality-popup">
+    <h3>حدد جودة الحلقة</h3>
+    <div class="quality-option" onclick="playVideo('medium')">متوسطة</div>
+    <div class="quality-option" onclick="playVideo('high')">عالية</div>
+    <div class="quality-option" onclick="playVideo('low')">منخفضة</div>
+</div>
+
+<!-- نافذة خيارات التحكم -->
+<div class="controls-popup" id="controls-popup">
+    <h3>خيارات التحكم</h3>
+    <div class="control-option" onclick="toggleFullScreen()">توسيع الشاشة</div>
+    <div class="control-option" onclick="togglePlaybackSpeed()">تغيير سرعة التشغيل</div>
+</div>
+
+<script>
+    document.getElementById('loader-wrapper').style.display = 'none';
+    document.getElementById('main-video').style.display = 'block';
+    document.querySelector('.content').style.display = 'block';
+
+    function toggleDescription() {
+        const description = document.querySelector('.video-description');
+        description.style.display = description.style.display === 'block' ? 'none' : 'block';
+    }
+
+    let currentVideoQuality = {
+        medium: 'video2-medium.mp4',
+        high: 'video2-high.mp4',
+        low: 'video2-low.mp4'
+    };
+
+    function showQualityOptions(medium, high, low, title) {
+        currentVideoQuality = { medium, high, low };
+        const video = document.getElementById('video');
+        video.src = medium; // تعيين الجودة المتوسطة كبداية
+        document.getElementById('fixed-year').innerText = "Powered by Fans Home "; // تحديث السنة
+        document.querySelector('.video-title').innerText = title; // تحديث العنوان
+        document.getElementById('quality-popup').style.display = 'block'; // إظهار نافذة الجودة
+    }
+
+    function playVideo(quality) {
+        const video = document.getElementById('video');
+        video.src = currentVideoQuality[quality]; // تعيين مصدر الفيديو بناءً على الجودة المختارة
+        video.play();
+        document.getElementById('quality-popup').style.display = 'none'; // إخفاء نافذة الجودة
+    }
+
+    // خيارات التحكم
+    function toggleFullScreen() {
+        const video = document.getElementById('video');
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) { // Safari
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) { // IE11
+            video.msRequestFullscreen();
+        }
+        document.getElementById('controls-popup').style.display = 'none'; // إخفاء نافذة التحكم
+    }
+
+    function togglePlaybackSpeed() {
+        const video = document.getElementById('video');
+        video.playbackRate = video.playbackRate === 1 ? 1.5 : 1; // تغيير السرعة بين 1 و 1.5
+        document.getElementById('controls-popup').style.display = 'none'; // إخفاء نافذة التحكم
+    }
+
+    // إظهار خيارات التحكم عند النقر على المشغل
+    document.getElementById('video').addEventListener('click', function() {
+        document.getElementById('controls-popup').style.display = 'block'; // إظهار خيارات التحكم
+    });
+</script>
+
+</body>
+</html>
